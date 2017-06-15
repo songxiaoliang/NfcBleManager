@@ -1,41 +1,27 @@
 # NfcBleManager
 #### A Bluetooth, NFC package library, Bluetooth module can be scanned, linked, read and other operations. NFC module can get mobile phone NFC state, and can read IOS14443A type Tag card.
 
-# react-native-ble-manager
-[![npm version](https://img.shields.io/npm/v/react-native-ble-manager.svg?style=flat)](https://www.npmjs.com/package/react-native-ble-manager)
-[![npm downloads](https://img.shields.io/npm/dm/react-native-ble-manager.svg?style=flat)](https://www.npmjs.com/package/react-native-ble-manager)
-[![GitHub issues](https://img.shields.io/github/issues/innoveit/react-native-ble-manager.svg?style=flat)](https://github.com/innoveit/react-native-ble-manager/issues)
-
-This is a porting of https://github.com/don/cordova-plugin-ble-central project to React Native.
+# react-native-scy-nbc
+[![npm version](https://img.shields.io/npm/v/react-native-ble-manager.svg?style=flat)](https://www.npmjs.com/package/react-native-scy-nbc)
 
 ## Requirements
 RN 0.40+
 
-RN 0.30-0.39 supported until 2.4.3
-
 ## Supported Platforms
-- iOS 8+
-- Android (API 19+)
+- Android (API 18+)
 
 ## Install
 ```shell
-npm i --save react-native-ble-manager
+npm i react-native-scy-nbc --save 
 ```
-After installing, you need to link the native library. You can either:
-* Link native library with `react-native link`, or
-* Link native library manually
 
-Both approaches are described below.
-
-### Link Native Library with `react-native link`
+### 链接原生代码库
 
 ```shell
-react-native link react-native-ble-manager
+react-native link rreact-native-scy-nbc
 ```
 
-After this step:
- * iOS should be linked properly.
- * Android will need one more step, you need to edit `android/app/build.gradle`:
+编辑 `android/app/build.gradle`:
 ```gradle
 // file: android/app/build.gradle
 ...
@@ -52,23 +38,15 @@ android {
 }
 ```
 
-### Link Native Library Manually
-
-#### iOS
-- Open the node_modules/react-native-ble-manager/ios folder and drag BleManager.xcodeproj into your Libraries group.
-- Check the "Build Phases"of your project and add "libBleManager.a" in the "Link Binary With Libraries" section.
-
-#### Android
-##### Update Gradle Settings
+### 连接原生库成功后，检查如下文件是否正确
 
 ```gradle
 // file: android/settings.gradle
 ...
 
-include ':react-native-ble-manager'
-project(':react-native-ble-manager').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-ble-manager/android')
+include ':react-native-scy-nbc'
+project(':react-native-scy-nbc').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-scy-nbc/android')
 ```
-##### Update Gradle Build
 
 ```gradle
 // file: android/app/build.gradle
@@ -79,7 +57,7 @@ android {
 
     defaultConfig {
         ...
-        minSdkVersion 18 // <--- make sure this is 18 or greater
+        minSdkVersion 18 // <--- 最低版本为18
         ...
     }
     ...
@@ -90,21 +68,10 @@ dependencies {
     compile project(':react-native-ble-manager')
 }
 ```
-##### Update Android Manifest
 
-```xml
-// file: android/app/src/main/AndroidManifest.xml
-...
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-...
-```
-
-##### Register React Package
 ```java
 ...
-import it.innove.BleManagerPackage; // <--- import
+import com.nfcblemanager.bluetooth.NfcBleManagerPackage; // <--- 导入包，注意查看路径是否正确
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -114,346 +81,291 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
         return Arrays.<ReactPackage>asList(
             new MainReactPackage(),
-            new BleManagerPackage() // <------ add the package
+            new NfcBleManagerPackage() // <------ 添加包
         );
     }
 
     ...
 }
 ```
-## Note
-- Remember to use the `start` method before anything.
-- Avoid to connect/read/write to a peripheral during scan.
-- Android API >= 23 require the ACCESS_COARSE_LOCATION permission to scan for peripherals. React Native >= 0.33 natively support PermissionsAndroid like in the example.
-- Before write, read or start notification you need to call `retrieveServices` method
+##### 修改 Android Manifest
 
-## Example
+```xml
+// file: android/app/src/main/AndroidManifest.xml
+...
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.NFC" />
+...
+```
+```xml
+...
+   <activity
+        android:name=".MainActivity"
+        android:label="@string/app_name"
+        android:launchMode="singleTop" // <--- 1.设置启动方式
+        android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+        android:windowSoftInputMode="adjustResize"> 
+         <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        // 2.添加如下filter
+        <intent-filter>  
+            <action android:name="android.nfc.action.NDEF_DISCOVERED" />  
+        </intent-filter>  
+        <intent-filter>  
+            <action android:name="android.nfc.action.TAG_DISCOVERED" >  
+            </action>  
+            <category android:name="android.intent.category.DEFAULT" >  
+            </category>  
+        </intent-filter>  
+        <intent-filter>  
+            <action android:name="android.nfc.action.TECH_DISCOVERED" />  
+        </intent-filter>  
+        // 3.配置扫描过滤
+        <meta-data android:name="android.nfc.action.TECH_DISCOVERED"
+            android:resource="@xml/nfc_tech_filter" />
+      </activity>
+...
+```
+
+```xml
+...
+   
+        在app/src/res/下创建xml文件夹，并在该文件夹下创建fc_tech_filter.xml文件：
+        <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+            <tech-list>
+                <tech>android.nfc.tech.IsoDep</tech>  
+                <tech>android.nfc.tech.NfcA</tech>    
+                <tech>android.nfc.tech.NfcB</tech>    
+                <tech>android.nfc.tech.NfcF</tech>    
+                <tech>android.nfc.tech.NfcV</tech>    
+                <tech>android.nfc.tech.Ndef</tech>    
+                <tech>android.nfc.tech.NdefFormatable</tech>    
+                <tech>android.nfc.tech.MifareUltralight</tech>   
+                <tech>android.nfc.tech.MifareClassic</tech>  
+            </tech-list>
+        </resources>
+...
+```
+
+## 注意
+- 记住在任何事情之前使用`start`方法。
+- 避免在扫描期间连接/读取/写入外设。
+- 读写之前，需要调用`retrieveServices`方法。
+
+## Demo
 Look in the [example](https://github.com/innoveit/react-native-ble-manager/tree/master/example) project.
 
-## Methods
+##  NFC
 
-### start(options)
-Init the module.
-Returns a `Promise` object.
-
-__Arguments__
-- `options` - `JSON` 
-
-The parameter is optional the configuration keys are:
-- `showAlert` - `Boolean` - [iOS only] Show or hide the alert if the bluetooth is turned off during initialization
-- `restoreIdentifierKey` - `String` - [iOS only] Unique key to use for CoreBluetooth state restoration
-- `forceLegacy` - `Boolean` - [Android only] Force to use the LegacyScanManager
-
-__Examples__
+### 注册数据接受回调
+ 用于接收手机NFC状态、读取NFC数据。
+ 
+ __示例__
 ```js
-BleManager.start({showAlert: false})
-  .then(() => {
-    // Success code
-    console.log('Module initialized');
-  });
-
+    componentDidMount() {
+        // NFC状态
+        DeviceEventEmitter.addListener('onNfcStatus', function(status) {
+            ToastAndroid.show(status, ToastAndroid.SHORT);
+        })
+        // NFC扫描读取的Tag数据
+        DeviceEventEmitter.addListener('onNfcScanResult', function(result) {
+            ToastAndroid.show(result, ToastAndroid.SHORT);
+        })
+    }
 ```
 
-### scan(serviceUUIDs, seconds)
-Scan for availables peripherals.
-Returns a `Promise` object.
+### startNfc()
+ 检测手机NFC功能状态
 
-__Arguments__
-- `serviceUUIDs` - `Array of String` - the UUIDs of the services to looking for. On Android the filter works only for 5.0 or newer.
-- `seconds` - `Integer` - the amount of seconds to scan.
-- `allowDuplicates` - `Boolean` - [iOS only] allow duplicates in device scanning
-
-__Examples__
+__示例__
 ```js
-BleManager.scan([], 5, true)
-  .then(() => {
-    // Success code
-    console.log('Scan started');
-  });
-
+  _checkNfc() {
+    Manager.startNfc();
+  }
 ```
 
-### stopScan()
-Stop the scanning.
-Returns a `Promise` object.
+### readNfc()
+启动NFC读取功能，启动后，将Tag放入扫描区即可读取。
 
-__Examples__
+__示例__
 ```js
-BleManager.stopScan()
-  .then(() => {
-    // Success code
-    console.log('Scan stopped');
-  });
+  _startRead() {
+    Manager.readNfc();
+  }
+```
 
+##  蓝牙
+### start
+在使用蓝牙前，需要调用start启动。
+
+__示例__
+```js
+    componentDidMount() {
+        Manager.start({showAlert: false, allowDuplicates: false});
+    }
+```
+
+### enableBluetooth
+检测手机蓝牙状态，例如蓝牙是否可用，是否开启，未开启状态下会申请蓝牙权限，并自动开启蓝牙功能。
+
+__示例__
+```js
+     Manager.enableBluetooth()
+          .then(() => {
+            alert('蓝牙已开启，可以使用');
+          })
+          .catch((error) => {
+            alert('用户拒绝授权蓝牙权限');
+    });
+```
+
+### scan(serviceUUID,seconds,true)
+扫描外部蓝牙设备
+
+__参数__
+- `serviceUUID`  传- `[]` - 即可
+- `seconds` 扫描时长，以秒计算.
+
+__示例__
+```js
+ Manager.scan([], 6, true).then((results) => {
+        ToastAndroid.show("扫描中..." + results,ToastAndroid.SHORT);
+      });
+```
+
+### stopScan
+停止扫描外部蓝牙设备
+
+__示例__
+```js
+Manager.stopScan()
+  .then(() => {
+     ToastAndroid.show("停止扫描..." + results,ToastAndroid.SHORT);
+  });
 ```
 
 ### connect(peripheralId)
-Attempts to connect to a peripheral. In many case if you can't connect you have to scan for the peripheral before.
-Returns a `Promise` object.
+链接外部蓝牙设备
 
-__Arguments__
-- `peripheralId` - `String` - the id/mac address of the peripheral to connect.
+__参数__
+- `peripheralId`  蓝牙设备Id
 
-__Examples__
+__示例__
 ```js
-BleManager.connect('XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX')
-  .then(() => {
-    // Success code
-    console.log('Connected');
-  })
-  .catch((error) => {
-    // Failure code
-    console.log(error);
-  });
+      Manager.connect(peripheral.id)
+        .then(() => {
+          ToastAndroid.show('连接外部设备'+peripheral.id, ToastAndroid.SHORT);
+        })
+        .catch((error) => {
+          ToastAndroid.show('连接错误：'+error, ToastAndroid.SHORT);
+        });
+
 ```
 
 ### disconnect(peripheralId)
-Disconnect from a peripheral.
-Returns a `Promise` object.
+断开外部蓝牙设备链接
 
-__Arguments__
-- `peripheralId` - `String` - the id/mac address of the peripheral to disconnect.
+__参数__
+- `peripheralId`  蓝牙设备Id
 
-__Examples__
+__示例__
 ```js
-BleManager.disconnect('XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX')
-  .then(() => {
-    // Success code
-    console.log('Disconnected');
-  })
-  .catch((error) => {
-    // Failure code
-    console.log(error);
-  });
+     Manager.disconnect(peripheral.id);
 ```
 
-### enableBluetooth() [Android only]
-Create the request to the user to activate the bluetooth.
-Returns a `Promise` object.
+### retrieveServices(peripheralId)
+注册蓝牙设备服务,检索外设的service和characteristic。
 
-__Examples__
+__参数__
+- `peripheralId`  蓝牙设备Id
+
+__示例__
 ```js
-BleManager.enableBluetooth()
-  .then(() => {
-    // Success code
-    console.log('The bluetooh is already enabled or the user confirm');
-  })
-  .catch((error) => {
-    // Failure code
-    console.log('The user refuse to enable bluetooth');
-  });
+    Manager.retrieveServices(peripheral.id).then((peripheralData) => {
+          ToastAndroid.show('检索的外部服务' + JSON.stringify(peripheralData), ToastAndroid.SHORT);
+    });
 ```
 
-### checkState()
-Force the module to check the state of BLE and trigger a BleManagerDidUpdateState event.
+### readRSSI(peripheralId)
+读取当前链接蓝牙设备的RSSI值
 
-__Examples__
+__参数__
+- `peripheralId`  蓝牙设备Id
+
+__示例__
 ```js
-BleManager.checkState();
+    Manager.readRSSI(peripheral.id).then((rssi) => {
+        ToastAndroid.show('检索实际RSSI值'+rssi, ToastAndroid.SHORT);
+    });
 ```
 
-### startNotification(peripheralId, serviceUUID, characteristicUUID)
-Start the notification on the specified characteristic.
-Returns a `Promise` object.
+### read(peripheralId，serviceUUID,characteristicUUID)
+读取当前链接蓝牙设备的数据
 
-__Arguments__
-- `peripheralId` - `String` - the id/mac address of the peripheral.
-- `serviceUUID` - `String` - the UUID of the service.
-- `characteristicUUID` - `String` - the UUID of the characteristic.
+__参数__
+- `peripheralId`  蓝牙设备Id
+- `serviceUUID`  服务的UUID。
+- `characteristicUUID`  特性的UUID。
 
-__Examples__
+__示例__
 ```js
-BleManager.startNotification('XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX')
-  .then(() => {
-    // Success code
-    console.log('Notification started');
-  })
-  .catch((error) => {
-    // Failure code
-    console.log(error);
-  });
-```
-
-### stopNotification(peripheralId, serviceUUID, characteristicUUID)
-Stop the notification on the specified characteristic.
-Returns a `Promise` object.
-
-__Arguments__
-- `peripheralId` - `String` - the id/mac address of the peripheral.
-- `serviceUUID` - `String` - the UUID of the service.
-- `characteristicUUID` - `String` - the UUID of the characteristic.
-
-### read(peripheralId, serviceUUID, characteristicUUID)
-Read the current value of the specified characteristic.
-Returns a `Promise` object.
-
-__Arguments__
-- `peripheralId` - `String` - the id/mac address of the peripheral.
-- `serviceUUID` - `String` - the UUID of the service.
-- `characteristicUUID` - `String` - the UUID of the characteristic.
-
-__Examples__
-```js
-BleManager.read('XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX')
-  .then((readData) => {
-    // Success code
-    console.log('Read: ' + readData);
-  })
-  .catch((error) => {
-    // Failure code
-    console.log(error);
-  });
+   Manager.read('peripheralId', 'serviceUUID', 'characteristicUUID')
+      .then((readData) => {
+        ToastAndroid.show('读取到数据:'+readData, ToastAndroid.SHORT);
+      })
+      .catch((error) => {
+        ToastAndroid.show('读取数据失败:'+error, ToastAndroid.SHORT);
+      });
 ```
 
 ### write(peripheralId, serviceUUID, characteristicUUID, data, maxByteSize)
 Write with response to the specified characteristic.
 Returns a `Promise` object.
 
-__Arguments__
-- `peripheralId` - `String` - the id/mac address of the peripheral.
-- `serviceUUID` - `String` - the UUID of the service.
-- `characteristicUUID` - `String` - the UUID of the characteristic.
-- `data` - `Array` - the data to write.
-- `maxByteSize` - `Integer` - specify the max byte size before splitting message
+__参数__
+- `peripheralId`  外设的id / mac地址。
+- `serviceUUID`   服务的UUID。
+- `characteristicUUID`  characteristic的UUID。
+- `data`  要写入的数据，数组。
+- `maxByteSize`   在分割消息之前指定最大字节大小
 
-__Examples__
+__示例__
 ```js
-BleManager.write('XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', data)
+Manager.write('peripheralId', 'serviceUUID', 'characteristicUUID', data)
   .then(() => {
-    // Success code
-    console.log('Write: ' + data);
+    ToastAndroid.show('成功写入的数据: '+data, ToastAndroid.SHORT);
   })
   .catch((error) => {
-    // Failure code
-    console.log(error);
+     ToastAndroid.show('写入数据失败:'+error, ToastAndroid.SHORT);
   });
 ```
 
-### writeWithoutResponse(peripheralId, serviceUUID, characteristicUUID, data, maxByteSize, queueSleepTime)
-Write without response to the specified characteristic.
-Returns a `Promise` object.
-
-__Arguments__
-- `peripheralId` - `String` - the id/mac address of the peripheral.
-- `serviceUUID` - `String` - the UUID of the service.
-- `characteristicUUID` - `String` - the UUID of the characteristic.
-- `data` - `Array` - the data to write.
-- `maxByteSize` - `Integer` - (Optional) specify the max byte size
-- `queueSleepTime` - `Integer` - (Optional) specify the wait time before each write if the data is greater than maxByteSize
-
-__Examples__
-```js
-BleManager.writeWithoutResponse('XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', data)
-  .then(() => {
-    // Success code
-    console.log('Writed: ' + data);
-  })
-  .catch((error) => {
-    // Failure code
-    console.log(error);
-  });
-```
-
-### readRSSI(peripheralId)
-Read the current value of the RSSI.
-Returns a `Promise` object.
-
-__Arguments__
-- `peripheralId` - `String` - the id/mac address of the peripheral.
-
-__Examples__
-```js
-BleManager.readRSSI('XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX')
-  .then((rssi) => {
-    // Success code
-    console.log('Current RSSI: ' + rssi);
-  })
-  .catch((error) => {
-    // Failure code
-    console.log(error);
-  });
-```
-
-### retrieveServices(peripheralId)
-Retrieve the peripheral's services and characteristics.
-Returns a `Promise` object.
-
-__Arguments__
-- `peripheralId` - `String` - the id/mac address of the peripheral.
-
-__Examples__
-```js
-BleManager.retrieveServices('XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX')
-  .then((peripheralInfo) => {
-    // Success code
-    console.log('Peripheral info:', peripheralInfo);
-  });  
-```
 
 ### getConnectedPeripherals(serviceUUIDs)
-Return the connected peripherals.
-Returns a `Promise` object.
+获取已连接的蓝牙设备。
 
-__Arguments__
-- `serviceUUIDs` - `Array of String` - the UUIDs of the services to looking for.
+__参数__
+- `serviceUUIDs` -寻找的服务的UUID。
 
-__Examples__
+__示例__
 ```js
-BleManager.getConnectedPeripherals([])
+Manager.getConnectedPeripherals([])
   .then((peripheralsArray) => {
-    // Success code
-    console.log('Connected peripherals: ' + peripheralsArray.length);
+    ToastAndroid.show('所有已连接的蓝牙设备 : ' + peripheralsArray.length);
   });
 
 ```
 
-### getDiscoveredPeripherals()
-Return the discovered peripherals after a scan.
-Returns a `Promise` object.
+## 回调事件
 
-__Examples__
-```js
-BleManager.getDiscoveredPeripherals([])
-  .then((peripheralsArray) => {
-    // Success code
-    console.log('Discovered peripherals: ' + peripheralsArray.length);
-  });
-
-```
-
-### removePeripheral(peripheralId)
-Removes a disconnected peripheral from the cached list.
-It is useful if the device is turned off, because it will be re-discovered upon turning on again.
-Returns a `Promise` object.
-
-__Arguments__
-- `peripheralId` - `String` - the id/mac address of the peripheral.
-
-### isPeripheralConnected(peripheralId, serviceUUIDs)
-Check whether a specific peripheral is connected and return `true` or `false`.
-Returns a `Promise` object.
-
-__Examples__
-```js
-BleManager.isPeripheralConnected('XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', [])
-  .then((isConnected) => {
-    if (isConnected) {
-      console.log('Peripheral is connected!');
-    } else {
-      console.log('Peripheral is NOT connected!');
-    }
-  });
-
-```
-
-## Events
 ### BleManagerStopScan
-The scanning for peripherals is ended.
+停止扫描回调监听。
 
-__Arguments__
-- `none`
-
-__Examples__
+__示例__
 ```js
 bleManagerEmitter.addListener(
     'BleManagerStopScan',
@@ -464,57 +376,66 @@ bleManagerEmitter.addListener(
 ```
 
 ###  BleManagerDidUpdateState
-The BLE change state.
+蓝色状态发生改变。
 
-__Arguments__
-- `state` - `String` - the new BLE state ('on'/'off').
-
-__Examples__
+__示例__
 ```js
 bleManagerEmitter.addListener(
     'BleManagerDidUpdateState',
-    (args) => {
-        // The new state: args.state
+    (status) => {
+        ToastAndroid.show('当前蓝牙状态为:'+status, ToastAndroid.SHORT);
     }
 );
 ```
 
 ###  BleManagerDiscoverPeripheral
-The scanning find a new peripheral.
+扫描到蓝牙设备
 
-__Arguments__
-- `id` - `String` - the id of the peripheral
-- `name` - `String` - the name of the peripheral
-
-__Examples__
+__示例__
 ```js
 bleManagerEmitter.addListener(
     'BleManagerDiscoverPeripheral',
-    (args) => {
-        // The id: args.id
-        // The name: args.name
+    (peripheral) => {
+        ToastAndroid.show('蓝牙Id为:' + peripheral.id + '蓝牙名称为：' + peripheral.name, ToastAndroid.SHORT);
     }
 );
 ```
 
 ###  BleManagerDidUpdateValueForCharacteristic
-A characteristic notify a new value.
+Characteristic通知新值。
 
-__Arguments__
-- `peripheral` - `String` - the id of the peripheral
-- `characteristic` - `String` - the UUID of the characteristic
-- `value` - `String` - the read value in Hex format
+__示例__
+```js
+bleManagerEmitter.addListener(
+    'BleManagerDidUpdateValueForCharacteristic',
+    (data) => {
+        ToastAndroid.show('收到数据:' + data.value + '蓝牙设备：' + data.peripheral + '蓝牙characteristicUUID:' + data.characteristic, ToastAndroid.SHORT);
+    }
+);
+```
 
 ###  BleManagerConnectPeripheral
-A peripheral was connected.
+外设已连接。
 
-__Arguments__
-- `peripheral` - `String` - the id of the peripheral
+__示例__
+```js
+bleManagerEmitter.addListener(
+    'BleManagerConnectPeripheral',
+    (peripheralId) => {
+    
+    }
+);
+```
 
 ###  BleManagerDisconnectPeripheral
-A peripheral was disconnected.
+外设已断开。
 
-__Arguments__
-- `peripheral` - `String` - the id of the peripheral
-
-
+__示例__
+```js
+bleManagerEmitter.addListener(
+    'BleManagerDisconnectPeripheral',
+    (peripheralId) => {
+    
+    }
+);
+```
