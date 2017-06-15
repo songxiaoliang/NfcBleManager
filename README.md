@@ -4,6 +4,9 @@
 # react-native-scy-nbc
 [![npm version](https://img.shields.io/npm/v/react-native-scy-nbc.svg?style=flat)](https://www.npmjs.com/package/react-native-scy-nbc)
 
+# 示例代码
+[示例](https://github.com/songxiaoliang/NfcBleManager/tree/master/example)
+
 ## RN版本
 RN 0.40+
 
