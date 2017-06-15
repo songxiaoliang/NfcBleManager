@@ -154,11 +154,6 @@ public class MainApplication extends Application implements ReactApplication {
 ...
 ```
 
-## 注意
-- 记住在任何事情之前使用`start`方法。
-- 避免在扫描期间连接/读取/写入外设。
-- 读写之前，需要调用`retrieveServices`方法。
-
 ## 代码示例
  [示例](https://github.com/innoveit/react-native-ble-manager/tree/master/example) .
 
@@ -202,6 +197,12 @@ __示例__
 ```
 
 ##  蓝牙
+
+### 注意
+- 记住在任何事情之前使用`start`方法。
+- 避免在扫描期间连接/读取/写入外设。
+- 读写之前，需要调用`retrieveServices`方法。
+
 ### start
 在使用蓝牙前，需要调用start启动。
 
