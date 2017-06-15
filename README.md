@@ -4,13 +4,13 @@
 # react-native-scy-nbc
 [![npm version](https://img.shields.io/npm/v/react-native-scy-nbc.svg?style=flat)](https://www.npmjs.com/package/react-native-scy-nbc)
 
-## Requirements
+## RN版本
 RN 0.40+
 
-## Supported Platforms
+## Android版本
 - Android (API 18+)
 
-## Install
+## 安装
 ```shell
 npm i react-native-scy-nbc --save 
 ```
@@ -21,7 +21,7 @@ npm i react-native-scy-nbc --save
 react-native link rreact-native-scy-nbc
 ```
 
-编辑 `android/app/build.gradle`:
+`android/app/build.gradle`:
 ```gradle
 // file: android/app/build.gradle
 ...
@@ -156,8 +156,8 @@ public class MainApplication extends Application implements ReactApplication {
 - 避免在扫描期间连接/读取/写入外设。
 - 读写之前，需要调用`retrieveServices`方法。
 
-## Demo
-Look in the [example](https://github.com/innoveit/react-native-ble-manager/tree/master/example) project.
+## 代码示例
+ [示例](https://github.com/innoveit/react-native-ble-manager/tree/master/example) .
 
 ##  NFC
 
