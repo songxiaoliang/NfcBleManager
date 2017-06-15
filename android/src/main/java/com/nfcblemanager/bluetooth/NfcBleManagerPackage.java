@@ -8,6 +8,7 @@ import com.facebook.react.uimanager.ViewManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import com.nfcblemanager.nfc.NfcReactNativeModule;
 
 public class NfcBleManagerPackage implements ReactPackage {
 
@@ -17,6 +18,7 @@ public class NfcBleManagerPackage implements ReactPackage {
 	public List<NativeModule> createNativeModules(ReactApplicationContext reactApplicationContext) {
 		List<NativeModule> modules = new ArrayList<>();
 		modules.add(new BleManager(reactApplicationContext));
+		modules.add(new NfcReactNativeModule(reactApplicationContext));
 		return  modules;
 	}
 

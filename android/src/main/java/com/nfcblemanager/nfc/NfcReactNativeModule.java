@@ -1,4 +1,4 @@
-package es.tiarg.nfcreactnative;
+package com.nfcblemanager.nfc;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -21,7 +21,7 @@ import android.nfc.tech.NfcB;
 import android.nfc.tech.Ndef;
 
 
-class NfcReactNativeModule extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
+public class NfcReactNativeModule extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
 
     private ReactApplicationContext reactContext;
     private NfcAdapter mNfcAdapter;

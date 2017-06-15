@@ -1,6 +1,6 @@
 {
-  "name": "nfcblemanager",
-  "version": "1.0.0",
+  "name": "react-native-scy-nbc",
+  "version": "1.0.2",
   "description": "",
   "main": "Manager.js",
   "scripts": {
