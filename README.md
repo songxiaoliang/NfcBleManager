@@ -68,7 +68,7 @@ android {
 
 dependencies {
     ...
-    compile project(':react-native-ble-manager')
+    compile project(':react-native-scy-nbc')
 }
 ```
 
