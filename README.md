@@ -3,9 +3,6 @@
 
 [![npm version](https://img.shields.io/npm/v/react-native-scy-nbc.svg?style=flat)](https://www.npmjs.com/package/react-native-scy-nbc)
 
-# 示例代码
-[示例](https://github.com/songxiaoliang/NfcBleManager/tree/master/example)
-
 ## RN版本
 RN 0.40+
 
@@ -153,8 +150,8 @@ public class MainApplication extends Application implements ReactApplication {
 ...
 ```
 
-## 代码示例
- [示例](https://github.com/innoveit/react-native-ble-manager/tree/master/example) .
+## 示例代码
+[示例](https://github.com/songxiaoliang/NfcBleManager/tree/master/example)
 
 ##  NFC
 
