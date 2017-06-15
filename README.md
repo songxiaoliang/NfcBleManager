@@ -133,7 +133,7 @@ public class MainApplication extends Application implements ReactApplication {
 ```xml
 ...
    
-        在app/src/res/下创建xml文件夹，并在该文件夹下创建fc_tech_filter.xml文件：
+        在app/src/res/下创建xml文件夹，并在该文件夹下创建nfc_tech_filter.xml文件：
         <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
             <tech-list>
                 <tech>android.nfc.tech.IsoDep</tech>  
