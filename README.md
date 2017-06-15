@@ -1,7 +1,6 @@
-# NfcBleManager
+# react-native-scy-nbc
 #### A Bluetooth, NFC package library, Bluetooth module can be scanned, linked, read and other operations. NFC module can get mobile phone NFC state, and can read IOS14443A type Tag card.
 
-# react-native-scy-nbc
 [![npm version](https://img.shields.io/npm/v/react-native-scy-nbc.svg?style=flat)](https://www.npmjs.com/package/react-native-scy-nbc)
 
 # 示例代码
